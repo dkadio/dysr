@@ -18,7 +18,7 @@ func main() {
 	s.HandleFunc("/short/{url:"+re+"}", getShortUrL)
 	r.HandleFunc("/{code:"+re2+"}", redirect)
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8000", r)
 }
 
 func redirect(w http.ResponseWriter, r *http.Request) {

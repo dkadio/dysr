@@ -13,6 +13,8 @@ type Shortener struct {
 	kv   kvAdapter
 }
 
+type Shorty struct{}
+
 type kvAdapter interface {
 	getValueFor(string) string
 	putValueFor(string, string) error
@@ -55,6 +57,7 @@ func (s Shortener) createShortVersion(longUrl url.URL) (string, error) {
 	return su.String(), err
 }
 
+//hash a string and get the first 3 and the last 3 chars
 func hashAndShort(value string) string {
 	h := sha256.New()
 	h.Write([]byte(value))
@@ -64,7 +67,6 @@ func hashAndShort(value string) string {
 	return rs
 }
 
-// gets
 func (s Shortener) GetLongUrl(shortUrl url.URL) url.URL {
 	//we expect that the long url is written to store
 	log.Println("Try to get Long Url for", shortUrl.String())
@@ -72,15 +74,17 @@ func (s Shortener) GetLongUrl(shortUrl url.URL) url.URL {
 	return *u
 }
 
-func (s Shortener) writeToStore(short, long string) error {
-	log.Println("write to store", short, "=", long)
-	if err := s.kv.putValueFor(short, long); err != nil {
+//key == short version; value == long version
+func (s Shortener) writeToStore(key, value string) error {
+	log.Println("write to store", key, "=", value)
+	if err := s.kv.putValueFor(key, value); err != nil {
 		log.Fatal("Something went wrong at writing to store")
 		return err
 	}
 	return nil
 }
 
-func (s Shortener) readFromStore(short string) string {
-	return s.kv.getValueFor(short)
+//short == key
+func (s Shortener) readFromStore(key string) string {
+	return s.kv.getValueFor(key)
 }

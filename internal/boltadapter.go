@@ -11,6 +11,20 @@ type boltAdapter struct {
 	bucketName string
 }
 
+func NewBoltAdapterByString(StoreName, BucketName string) boltAdapter {
+	db := openDataBase(StoreName)
+	db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte(BucketName))
+		if err != nil {
+			panic(err)
+		}
+		return nil
+	})
+	defer db.Close()
+
+	return boltAdapter{StoreName, BucketName}
+}
+
 func NewBoltAdapter(c util.Config) boltAdapter {
 	db := openDataBase(c.StoreName)
 	db.Update(func(tx *bolt.Tx) error {

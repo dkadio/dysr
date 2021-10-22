@@ -1,0 +1,12 @@
+version: "3"
+services:
+
+  nginx:
+    image: nginx
+    container_name: reverseproxy
+    network_mode: "host"
+    ports:
+      - 88:88
+    volumes:
+      - ./nginxconf/:/etc/nginx/conf.d/
+

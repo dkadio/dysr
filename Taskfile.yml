@@ -2,6 +2,40 @@ version: '3'
 
 tasks:
   run:
+    deps: [run:ui, run:go, run:keycloak]
+    desc: runs all services
     cmds:
-      - go run cmd/main.go
-      - echo hello
+      - echo "stopped"
+
+  run:keycloak:
+    desc: start docker-compose
+    cmds:
+      - docker-compose up
+
+  run:go:
+    desc: Runs Go backend
+    cmds:
+      - go run cmd/usercodes/main.go
+
+  run:ui:
+    desc: runs ui
+    dir: ./ui
+    cmds:
+      - npm run start
+
+  update:
+    desc: updatesm deps
+    cmds:
+      - task: update:go
+      - task: update:npm
+
+  update:go:
+    desc: updates go deps
+    cmds:
+      - go mod tidy
+
+  update:npm:
+    desc: updates js deps
+    dir: ./ui
+    cmds:
+      - npm install 

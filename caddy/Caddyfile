@@ -1,0 +1,36 @@
+(configuration) {
+  root * /dev/null
+  log {
+    format console
+    level DEBUG
+  }
+
+  header / {
+    +Strict-Transport-Security "max-age=31536000; preload;"
+    +X-Frame-Options "DENY"
+    +X-XSS-Protection "1; mode=block"
+    +X-Content-Type-Options "nosniff"
+    +Content-Security-Policy "frame-ancestors 'none'; script-src 'self'; object-src 'none';"
+    +X-Content-Security-Policy "frame-options 'deny';"
+    +Referrer-Policy "no-referrer"
+  }
+
+  reverse_proxy /* http://host.docker.internal:3000 {
+     header_up Host {http.request.host}
+     header_up X-Real-IP {http.request.remote}
+     header_up X-Forwarded-For {http.request.remote}
+     header_up X-Forwarded-Port {http.request.port}
+  }
+
+  reverse_proxy /api/v1/* http://host.docker.internal:8000 {
+    header_up Host {http.request.host}
+    header_up X-Real-IP {http.request.remote}
+    header_up X-Forwarded-For {http.request.remote}
+    header_up X-Forwarded-Port {http.request.port}
+  }
+
+}
+
+localhost {
+  import configuration
+}
