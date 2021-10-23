@@ -40,7 +40,7 @@ func NewBoltAdapter(c util.Config) boltAdapter {
 }
 
 //abstract those functions threw interface
-func (b boltAdapter) putValueFor(key, value string) error {
+func (b boltAdapter) PutValueFor(key, value string) error {
 	db := openDataBase(b.storeName)
 
 	defer db.Close()
@@ -62,7 +62,7 @@ func openDataBase(storeName string) *bolt.DB {
 }
 
 //abstract those functions threw interface
-func (b boltAdapter) getValueFor(key string) string {
+func (b boltAdapter) GetValueFor(key string) string {
 	db := openDataBase(b.storeName)
 
 	defer db.Close()

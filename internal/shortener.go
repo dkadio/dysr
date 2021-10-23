@@ -16,8 +16,8 @@ type Shortener struct {
 type Shorty struct{}
 
 type kvAdapter interface {
-	getValueFor(string) string
-	putValueFor(string, string) error
+	GetValueFor(string) string
+	PutValueFor(string, string) error
 }
 
 func newShortener(hash, storeName, bucketName string) Shortener {
@@ -29,7 +29,7 @@ func newShortener(hash, storeName, bucketName string) Shortener {
 // gets a long version of a URL and returns the short version of a URL
 func (s Shortener) GetShortUrl(u url.URL) url.URL {
 	//check if its allready created and save in store
-	str := s.kv.getValueFor(u.String()) // getValueFor(u.String(), s.storeName, s.bucketName)
+	str := s.kv.GetValueFor(u.String()) // getValueFor(u.String(), s.storeName, s.bucketName)
 	var u1 *url.URL
 	var err error
 
@@ -77,7 +77,7 @@ func (s Shortener) GetLongUrl(shortUrl url.URL) url.URL {
 //key == short version; value == long version
 func (s Shortener) writeToStore(key, value string) error {
 	log.Println("write to store", key, "=", value)
-	if err := s.kv.putValueFor(key, value); err != nil {
+	if err := s.kv.PutValueFor(key, value); err != nil {
 		log.Fatal("Something went wrong at writing to store")
 		return err
 	}
@@ -86,5 +86,5 @@ func (s Shortener) writeToStore(key, value string) error {
 
 //short == key
 func (s Shortener) readFromStore(key string) string {
-	return s.kv.getValueFor(key)
+	return s.kv.GetValueFor(key)
 }
