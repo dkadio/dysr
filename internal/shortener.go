@@ -21,7 +21,7 @@ type kvAdapter interface {
 }
 
 func newShortener(hash, storeName, bucketName string) Shortener {
-	config, _ := util.LoadConfig("./util")
+	config := util.LoadConfig()
 	bolt := NewBoltAdapter(config)
 	return Shortener{hash, bolt}
 }
@@ -48,7 +48,7 @@ func (s Shortener) GetShortUrl(u url.URL) url.URL {
 
 //hashs long version an saves it to store
 func (s Shortener) createShortVersion(longUrl url.URL) (string, error) {
-	config, _ := util.LoadConfig("./util")
+	config := util.LoadConfig()
 	su, _ := url.Parse(longUrl.String())
 	su.Path = hashAndShort(longUrl.Path)
 	su.Host = config.ServiceURL

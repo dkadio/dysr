@@ -2,9 +2,11 @@ package middlewares
 
 import (
 	"errors"
+
 	"github.com/MicahParks/keyfunc"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+
 	"log"
 	"net/http"
 	"strings"
@@ -44,7 +46,6 @@ func extractBearerToken(header string) (string, error) {
 }
 
 func (mw Middlewares) parseToken(jwtToken string) (*jwt.Token, error) {
-	log.Println("try parsing token:", jwtToken)
 	jwks, err := keyfunc.Get(mw.jwksUrl)
 	token, err := jwt.Parse(jwtToken, jwks.Keyfunc)
 
@@ -54,6 +55,10 @@ func (mw Middlewares) parseToken(jwtToken string) (*jwt.Token, error) {
 	}
 
 	return token, nil
+}
+
+func (mw Middlewares) None(c *gin.Context) {
+	c.Next()
 }
 
 func (mw Middlewares) JwtTokenCheck(c *gin.Context) {
@@ -73,13 +78,14 @@ func (mw Middlewares) JwtTokenCheck(c *gin.Context) {
 		return
 	}
 
-	_, OK := token.Claims.(jwt.MapClaims)
+	claims, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, UnsignedResponse{
 			Message: "unable to parse claims",
 		})
 		return
 	}
+	c.Set("claims", claims)
 	c.Next()
 }
 

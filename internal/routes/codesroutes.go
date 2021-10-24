@@ -3,8 +3,8 @@ package routes
 import (
 	"fmt"
 	"github.com/dkadio/dysr/internal/controllers"
-	"github.com/dkadio/dysr/internal/middlewares"
 	"github.com/dkadio/dysr/internal/models"
+	"github.com/dkadio/dysr/pkg/middlewares"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/juju/errors"
@@ -17,10 +17,8 @@ import (
 // NewRouter creates all the routes/endpoints, using Fizz.
 func NewCodesRouter() (*fizz.Fizz, error) {
 	engine := gin.New()
-
 	engine.Use(cors.Default())
-
-	fizzApp := fizz.NewFromEngine(engine)
+	app := fizz.NewFromEngine(engine)
 
 	infos := &openapi.Info{
 		Title:       "Dysr Codes Api",
@@ -28,13 +26,13 @@ func NewCodesRouter() (*fizz.Fizz, error) {
 		Version:     "1.0.0",
 	}
 
-	cc := controllers.NewCodesController()
-	fizzApp.GET("/docs", nil, fizzApp.OpenAPI(infos, "json"))
-
-	group := fizzApp.Group("/api/v1", "Codes Api", "Provides all codes infos.")
-
+	cc := controllers.NewMongoCodesController()
 	mw := middlewares.NewMiddlewares("")
+
+	app.GET("/docs", nil, app.OpenAPI(infos, "json"))
+	group := app.Group("/api/v1", "Codes Api", "Provides all codes infos.")
 	group.Use(mw.JwtTokenCheck)
+	//group.Use(mw.None)
 
 	group.GET("/healthcheck", []fizz.OperationOption{
 		fizz.Summary("Checks API is healthy."),
@@ -47,16 +45,34 @@ func NewCodesRouter() (*fizz.Fizz, error) {
 		fizz.Response(fmt.Sprint(http.StatusNotFound), "No Codes Found", models.APIError{}, nil, nil),
 	}, tonic.Handler(cc.GetCodes, http.StatusOK))
 
-	group.PUT("/pets:name", []fizz.OperationOption{
+	group.GET("/codes/:id", []fizz.OperationOption{
+		fizz.Summary("Get all User Codes."),
+		fizz.Response(fmt.Sprint(http.StatusInternalServerError), "Server Error", models.APIError{}, nil, nil),
+		fizz.Response(fmt.Sprint(http.StatusNotFound), "No Codes Found", models.APIError{}, nil, nil),
+	}, tonic.Handler(cc.GetCode, http.StatusOK))
+
+	group.POST("/codes", []fizz.OperationOption{
 		fizz.Summary("Update a pet."),
 		fizz.Response(fmt.Sprint(http.StatusInternalServerError), "Server Error", models.APIError{}, nil, nil),
-	}, tonic.Handler(cc.CeateCode, http.StatusOK))
+	}, tonic.Handler(cc.CreateCode, http.StatusOK))
 
-	if len(fizzApp.Errors()) != 0 {
-		return nil, fmt.Errorf("fizz errors: %v", fizzApp.Errors())
+	group.PUT("/codes/:id", []fizz.OperationOption{
+		fizz.Summary("Update a pet."),
+		fizz.Response(fmt.Sprint(http.StatusInternalServerError), "Server Error", models.APIError{}, nil, nil),
+		fizz.Response(fmt.Sprint(http.StatusNotFound), "No Codes Found", models.APIError{}, nil, nil),
+	}, tonic.Handler(cc.UpdateCode, http.StatusOK))
+
+	group.DELETE("/codes/:id", []fizz.OperationOption{
+		fizz.Summary("Deletes a UserCode."),
+		fizz.Response(fmt.Sprint(http.StatusInternalServerError), "Server Error", models.APIError{}, nil, nil),
+		fizz.Response(fmt.Sprint(http.StatusNotFound), "No Codes Found", models.APIError{}, nil, nil),
+	}, tonic.Handler(cc.DeleteCode, http.StatusOK))
+
+	if len(app.Errors()) != 0 {
+		return nil, fmt.Errorf("fizz errors: %v", app.Errors())
 	}
 	tonic.SetErrorHook(errHook)
-	return fizzApp, nil
+	return app, nil
 }
 
 func errHook(_ *gin.Context, e error) (int, interface{}) {

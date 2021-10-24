@@ -1,7 +1,7 @@
 package util
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/spf13/viper"
 )
@@ -13,17 +13,19 @@ type Config struct {
 	BucketName      string `mapstructure:"BUCKET_NAME"`
 	ServiceURL      string `mapstructure:"SERVICE_URL"`
 	ServiceProtocol string `mapstructure:"SERVICE_PROTOCOL"`
+	MongoUri        string `mapstructure:"MONGO_URI"`
+	DatabaseName    string `mapstructure:"DATABASE_NAME"`
 }
 
-func LoadConfig(path string) (config Config, err error) {
-	viper.AddConfigPath(path)
+func LoadConfig() (config Config) {
+	viper.AddConfigPath("./util")
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 	viper.AutomaticEnv()
 
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("Could not load Config", err)
 		return
 	}
 

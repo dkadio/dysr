@@ -13,7 +13,7 @@ type Url struct {
 }
 
 func NewShortUrl(u string) Url {
-	config, _ := util.LoadConfig("./util")
+	config := util.LoadConfig()
 	pu, _ := url.Parse(u)
 	//read this from config
 	util := newShortener(config.HASH, config.StoreName, config.BucketName)
@@ -23,7 +23,7 @@ func NewShortUrl(u string) Url {
 }
 
 func NewLongUrl(u string) Url {
-	config, _ := util.LoadConfig("./util")
+	config := util.LoadConfig()
 	pu, _ := url.Parse(u)
 	util := newShortener(config.HASH, config.StoreName, config.BucketName)
 	ru := Url{Long: *pu, util: util}

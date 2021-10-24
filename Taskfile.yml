@@ -7,6 +7,12 @@ tasks:
     cmds:
       - echo "stopped"
 
+  run:dev:frontend:
+    deps: [run:go, run:keycloak]
+    desc: runs services for ui dev
+    cmds: 
+      - echo "stopped"
+
   run:keycloak:
     desc: start docker-compose
     cmds:

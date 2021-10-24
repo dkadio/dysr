@@ -1,86 +1,120 @@
 package controllers
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"math/rand"
-	"net/http"
+	"context"
+	"github.com/golang-jwt/jwt/v4"
 	"time"
 
+	//"io/ioutil"
+	"log"
+	//"net/http"
+
 	classes "github.com/dkadio/dysr/internal"
+	"github.com/dkadio/dysr/util"
+
 	dm "github.com/dkadio/dysr/internal/models"
 	"github.com/gin-gonic/gin"
-	"github.com/go-http-utils/headers"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type kvAdapter interface {
+const collectionName = "codes"
+
+type DataBaseAdapter interface {
 	GetValueFor(string) string
 	PutValueFor(string, string) error
 }
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 type CodesController struct {
-	adapter kvAdapter
+	adapter        DataBaseAdapter
+	collection     *mongo.Collection
+	collectionName string
 }
 
 func NewCodesController() CodesController {
-	bolt := classes.NewBoltAdapterByString("codes.db", "codes")
-	return CodesController{bolt}
+	bolt := classes.NewBoltAdapterByString("redirects.db", "codes")
+	return CodesController{adapter: bolt}
 }
 
-func (c CodesController) CeateCode(gc *gin.Context) error {
+func NewMongoCodesController() CodesController {
+	collection := util.GetCollection(util.GetDatabase(), collectionName)
+	return CodesController{collection: collection, collectionName: collectionName}
 
-	url, err := ioutil.ReadAll(gc.Request.Body)
-	if err != nil {
-		log.Println("No Body Present")
-		gc.JSON(http.StatusNoContent, nil)
+}
+
+func (c CodesController) CreateCode(gc *gin.Context, params *dm.Code) (*dm.UserCode, error) {
+	jwtclaims, _ := gc.Get("claims")
+	claims := jwtclaims.(jwt.MapClaims)
+
+	username := claims["preferred_username"].(string)
+
+	code := dm.NewUserCode(username, params.Value)
+
+	//Put value to redirect store
+	//c.adapter.PutValueFor(code.Code.Key, code.Code.Value)
+	c.collection.InsertOne(context.TODO(), code)
+	//TODO Publish Event for new key value
+	return &code, nil
+}
+
+func (c CodesController) UpdateCode(gc *gin.Context, params *dm.Code) (*dm.UserCode, error) {
+	filter := bson.M{"_id": bson.M{"$eq": params.UUID}}
+	update := bson.M{"$set": bson.M{"value": params.Value, "updated": time.Now().Unix()}}
+	log.Println("Call with parms:", params)
+
+	result := dm.UserCode{}
+	upsert := true
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
+		Upsert:         &upsert,
 	}
-	log.Println(url)
-	token := gc.GetHeader(headers.Authorization)
 
-	log.Println("Call", token)
-	return nil
-}
+	singleresult := c.collection.FindOneAndUpdate(context.TODO(), filter, update, &opt).Decode(&result)
+	log.Println("singleresult", singleresult)
 
-func (c CodesController) UpdateCode(gc *gin.Context) error {
-	log.Println("Call")
-	id := gc.Param("id")
-	fmt.Println("Some id to update", id)
-	return nil
+	log.Println("Call", result)
+	//id := gc.Param("id")
+	//fmt.Printf("params: %v", params)
+	return &result, nil
 }
 
 //Query all codes for user request
-func (c CodesController) GetCodes(gc *gin.Context, params *dm.Code) (dm.Code, error) {
+func (c CodesController) GetCodes(gc *gin.Context) ([]dm.UserCode, error) {
 
-	log.Println("Call Get Codes")
-
-	return dm.Code{Key: "Test", Value: "Test"}, nil
-}
-
-func (c CodesController) GetCode(gc *gin.Context) {
-	log.Println("Call")
-
-	fmt.Println("Some id to update")
-}
-
-func createRandomKey(username string) string {
-	h := sha256.New()
-	h.Write([]byte(username + randSeq(10)))
-	hs := base64.StdEncoding.EncodeToString(h.Sum(nil))
-
-	rs := hs[:3] + hs[len(hs)-3:]
-	return rs
-}
-
-func randSeq(n int) string {
-	rand.Seed(time.Now().UnixNano())
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+	result := []dm.UserCode{}
+	filter := bson.D{{}}
+	codes, err := c.collection.Find(context.TODO(), filter)
+	if err != nil {
+		return result, err
 	}
-	return string(b)
+
+	for codes.Next(context.TODO()) {
+		uc := dm.UserCode{}
+		codes.Decode(&uc)
+		result = append(result, uc)
+	}
+
+	codes.Close(context.TODO())
+
+	return result, nil
+}
+
+func (c CodesController) GetCode(gc *gin.Context, params *dm.Code) (*dm.UserCode, error) {
+	result := dm.UserCode{}
+	filter := bson.M{"_id": bson.M{"$eq": params.UUID}}
+	c.collection.FindOne(context.TODO(), filter).Decode(&result)
+	return &result, nil
+}
+
+func (c CodesController) DeleteCode(gc *gin.Context, params *dm.UserCode) error {
+	log.Println("Call")
+	filter := bson.M{"_id": bson.M{"$eq": params.UUID}}
+	result, err := c.collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("Delete Count: ", result)
+	return nil
 }
