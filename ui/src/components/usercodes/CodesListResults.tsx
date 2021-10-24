@@ -20,6 +20,7 @@ import {
 import getInitials from '../../utils/getInitials';
 
 const CodesListResults = ({ codes, ...rest }) => {
+  console.log(codes);
   const [selectedcodeIds, setSelectedcodeIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
@@ -116,17 +117,17 @@ const CodesListResults = ({ codes, ...rest }) => {
                         {getInitials(code.name)}
                       </Avatar>
                       <Typography color="textPrimary" variant="body1">
-                        {code.name}
+                        http://localhost:8080/{code.code.key}
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell>{code.email}</TableCell>
+                  <TableCell>{code.user}</TableCell>
+                  <TableCell>{code.code.value}</TableCell>
                   <TableCell>
-                    {`${code.address.city}, ${code.address.state}, ${code.address.country}`}
+                    {moment.unix(code.created).format('DD/MM/YYYY - hh:mm')}
                   </TableCell>
-                  <TableCell>{code.phone}</TableCell>
                   <TableCell>
-                    {moment(code.createdAt).format('DD/MM/YYYY')}
+                    {moment.unix(code.updated).format('DD/MM/YYYY - hh:mm')}
                   </TableCell>
                 </TableRow>
               ))}

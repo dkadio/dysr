@@ -1,18 +1,21 @@
 import { Helmet } from 'react-helmet';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import CustomerListResults from '../components/usercodes/CodesListResults';
 import CustomerListToolbar from '../components/usercodes/CodesListToolbar';
 import { CodesApiService } from '../gen/api/services/CodesApiService';
 
 const CodesList = () => {
-  let codes = [];
+  const [codes, setCodes] = useState([]);
 
   useEffect(() => {
-    CodesApiService.getCodesFm().then((response) => {
-      console.log(response);
-      codes = response;
-    });
+    CodesApiService.getCodesFm()
+      .then((response) => {
+        setCodes(response);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     /*     return () => {
     };
  */

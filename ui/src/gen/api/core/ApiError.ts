@@ -4,10 +4,10 @@
 import type { ApiResult } from './ApiResult';
 
 export class ApiError extends Error {
-  url: string;
-  status: number;
-  statusText: string;
-  body: any;
+  public readonly url: string;
+  public readonly status: number;
+  public readonly statusText: string;
+  public readonly body: any;
 
   constructor(response: ApiResult, message: string) {
     super(message);

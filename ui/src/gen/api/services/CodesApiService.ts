@@ -14,7 +14,7 @@ export class CodesApiService {
    * @returns ModelsUserCode OK
    * @throws ApiError
    */
-  static getCodesFm(): CancelablePromise<Array<ModelsUserCode>> {
+  public static getCodesFm(): CancelablePromise<Array<ModelsUserCode>> {
     return __request({
       method: 'GET',
       path: `/api/v1/codes`,
@@ -32,7 +32,7 @@ export class CodesApiService {
    * @returns ModelsUserCode OK
    * @throws ApiError
    */
-  static createCodeFm(
+  public static createCodeFm(
     id: string,
     requestBody?: CreateCode_FmInput
   ): CancelablePromise<ModelsUserCode> {
@@ -53,7 +53,7 @@ export class CodesApiService {
    * @returns ModelsUserCode OK
    * @throws ApiError
    */
-  static getCodeFm(id: string): CancelablePromise<ModelsUserCode> {
+  public static getCodeFm(id: string): CancelablePromise<ModelsUserCode> {
     return __request({
       method: 'GET',
       path: `/api/v1/codes/${id}`,
@@ -71,7 +71,7 @@ export class CodesApiService {
    * @returns ModelsUserCode OK
    * @throws ApiError
    */
-  static updateCodeFm(
+  public static updateCodeFm(
     id: string,
     requestBody?: UpdateCode_FmInput
   ): CancelablePromise<ModelsUserCode> {
@@ -93,7 +93,7 @@ export class CodesApiService {
    * @returns any OK
    * @throws ApiError
    */
-  static deleteCodeFm(id: string): CancelablePromise<any> {
+  public static deleteCodeFm(id: string): CancelablePromise<any> {
     return __request({
       method: 'DELETE',
       path: `/api/v1/codes/${id}`,
@@ -109,7 +109,7 @@ export class CodesApiService {
    * @returns ModelsHealthcheck OK
    * @throws ApiError
    */
-  static healthcheck(): CancelablePromise<ModelsHealthcheck> {
+  public static healthcheck(): CancelablePromise<ModelsHealthcheck> {
     return __request({
       method: 'GET',
       path: `/api/v1/healthcheck`,
