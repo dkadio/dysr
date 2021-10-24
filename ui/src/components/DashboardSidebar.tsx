@@ -69,7 +69,7 @@ const items = [
   } */
 ];
 
-let user = {
+const user = {
   avatar: '/static/images/avatars/avatar_6.png',
   jobTitle: '',
   name: ''

@@ -1,27 +1,17 @@
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {
-  AppBar,
-  Badge,
-  Box,
-  Hidden,
-  IconButton,
-  Toolbar
-} from '@mui/material';
+import { AppBar, Badge, Box, Hidden, IconButton, Toolbar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Logo from './Logo';
-import { LoginButton } from './LoginButton';
+import LoginButton from './LoginButton';
 
 const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
   const [notifications] = useState([]);
- 
+
   return (
-    <AppBar
-      elevation={0}
-      {...rest}
-    >
+    <AppBar elevation={0} {...rest}>
       <Toolbar>
         <RouterLink to="/">
           <Logo />
@@ -37,7 +27,7 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          <LoginButton></LoginButton>
+          <LoginButton />
         </Hidden>
         <Hidden lgUp>
           <IconButton color="inherit" onClick={onMobileNavOpen} size="large">
@@ -48,7 +38,6 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
     </AppBar>
   );
 };
-
 
 DashboardNavbar.propTypes = {
   onMobileNavOpen: PropTypes.func

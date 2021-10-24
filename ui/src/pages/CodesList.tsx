@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Box, Container } from '@mui/material';
 import CustomerListResults from '../components/usercodes/CodesListResults';
 import CustomerListToolbar from '../components/usercodes/CodesListToolbar';
-import { CodesApiService } from '../gen/api/services/CodesApiService.ts';
+import { CodesApiService } from '../gen/api/services/CodesApiService';
 
 const CodesList = () => {
   let codes = [];

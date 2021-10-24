@@ -37,7 +37,7 @@ const CodeGeneratorResult = (props) => (
       {/*  <Button color="primary" fullWidth variant="text">
         Upload picture
       </Button>
- */}{' '}
+ */}
     </CardActions>
   </Card>
 );

@@ -1,3 +1,5 @@
+// eslint-disable
+/* eslint-disable */
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import { useCallback, useEffect } from 'react';
@@ -25,18 +27,17 @@ const Login = () => {
     keycloak?.login();
   }, [keycloak]);
 
+  // @ts-ignore
   useEffect(() => {
-    if (!keycloak || !initialized) {
-      return <>replace with loading page...</>;
-    }
     if (keycloak.authenticated) {
       navigate('/', { replace: true });
     }
     login();
-  });
+  }, [location.pathname]);
+
   return <></>;
 
-  return (
+  /* return (
     <>
       <Helmet>
         <title>Login | Material Kit</title>
@@ -186,7 +187,7 @@ const Login = () => {
         </Container>
       </Box>
     </>
-  );
+  ); */
 };
 
 export default Login;

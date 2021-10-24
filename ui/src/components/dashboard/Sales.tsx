@@ -1,4 +1,7 @@
+/* eslint-disable */
+
 import { Bar } from 'react-chartjs-2';
+
 import {
   Box,
   Button,
@@ -95,15 +98,11 @@ const Sales = (props) => {
   return (
     <Card {...props}>
       <CardHeader
-        action={(
-          <Button
-            endIcon={<ArrowDropDownIcon />}
-            size="small"
-            variant="text"
-          >
+        action={
+          <Button endIcon={<ArrowDropDownIcon />} size="small" variant="text">
             Last 7 days
           </Button>
-        )}
+        }
         title="Latest Sales"
       />
       <Divider />
@@ -114,10 +113,9 @@ const Sales = (props) => {
             position: 'relative'
           }}
         >
-          <Bar
-            data={data}
-            options={options}
-          />
+          {/*
+          // @ts-ignore*/}
+          <Bar data={data} options={options} />
         </Box>
       </CardContent>
       <Divider />

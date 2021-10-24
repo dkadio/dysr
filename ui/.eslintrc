@@ -1,26 +1,32 @@
 {
   "root": true,
   "env": {
-    "es6": true,
+    "es6": false,
     "browser": true
   },
-  "extends": [
-    "airbnb"
-  ],
+  "extends": ["airbnb"],
   "settings": {
     "import/resolver": {
       "node": {
-        "paths": [
-          "."
-        ],
-        "extensions": [
-          ".js",
-          ".jsx"
-        ]
+        "paths": ["."],
+        "extensions": [".js", ".jsx", ".tsx", ".ts"]
       }
     }
   },
   "rules": {
+    "spaced-comment": 0,
+    "no-unused-vars": 0,
+    "object-curly-newline": 0,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "comma-dangle": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "max-len": "off",
