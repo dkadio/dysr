@@ -19,6 +19,8 @@ var clientInstanceError error
 //Used to execute client creation procedure only once.
 var mongoOnce sync.Once
 
+const CODES_COLLECTION_NAME = "codes"
+
 //GetMongoClient - Return mongodb connection to work with
 func GetMongoClient() (*mongo.Client, error) {
 	//Perform connection creation operation only once.

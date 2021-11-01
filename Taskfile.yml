@@ -2,8 +2,14 @@ version: '3'
 
 tasks:
   run:
-    deps: [run:ui, run:go, run:keycloak]
+    deps: [run:ui, run:keycloak]
     desc: runs all services
+    cmds:
+      - echo "stopped"
+
+  run:go:
+    deps: [run:redirector, run:api]
+    desc: run backend
     cmds:
       - echo "stopped"
 
@@ -18,10 +24,16 @@ tasks:
     cmds:
       - docker-compose up
 
-  run:go:
+  run:api:
     desc: Runs Go backend
     cmds:
       - go run cmd/usercodes/main.go
+
+  run:redirector:
+    desc: Runs Go backend
+    cmds:
+      - go run cmd/redirecter/main.go
+
 
   run:ui:
     desc: runs ui

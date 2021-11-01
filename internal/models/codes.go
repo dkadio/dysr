@@ -9,11 +9,16 @@ import (
 	"time"
 )
 
+type CodeValue struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 type Code struct {
 	UUID    string  `json:"-" path:"id" bson:"-"`
+	Options Options `json:"options"`
 	Key     string  `json:"key"`
 	Value   string  `json:"value"`
-	Options Options `json:"options"`
 }
 
 type Options struct {

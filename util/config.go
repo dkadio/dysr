@@ -15,6 +15,7 @@ type Config struct {
 	ServiceProtocol string `mapstructure:"SERVICE_PROTOCOL"`
 	MongoUri        string `mapstructure:"MONGO_URI"`
 	DatabaseName    string `mapstructure:"DATABASE_NAME"`
+	NatsServer      string `mapstructure:"NATS_SERVER"`
 }
 
 func LoadConfig() (config Config) {
