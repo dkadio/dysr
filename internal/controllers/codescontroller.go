@@ -43,13 +43,13 @@ func NewMongoCodesController() CodesController {
 
 }
 
-func (c CodesController) CreateCode(gc *gin.Context, params *dm.Code) (*dm.UserCode, error) {
+func (c CodesController) CreateCode(gc *gin.Context, params *dm.CreateCode) (*dm.UserCode, error) {
 	jwtclaims, _ := gc.Get("claims")
 	claims := jwtclaims.(jwt.MapClaims)
 
 	username := claims["preferred_username"].(string)
 
-	code := dm.NewUserCode(username, params.Value)
+	code := dm.NewUserCode(username, params.Value, params.Options)
 
 	//Put value to redirect store
 	//c.adapter.PutValueFor(code.Code.Key, code.Code.Value)
@@ -60,8 +60,8 @@ func (c CodesController) CreateCode(gc *gin.Context, params *dm.Code) (*dm.UserC
 
 func (c CodesController) UpdateCode(gc *gin.Context, params *dm.Code) (*dm.UserCode, error) {
 	filter := bson.M{"_id": bson.M{"$eq": params.UUID}}
-	update := bson.M{"$set": bson.M{"value": params.Value, "updated": time.Now().Unix()}}
-	log.Println("Call with parms:", params)
+	update := bson.M{"$set": bson.M{"value": params.Value, "options": params.Options, "updated": time.Now().Unix()}}
+	log.Printf("Call with parms: %+v", params)
 
 	result := dm.UserCode{}
 	upsert := true

@@ -5,6 +5,7 @@ import { ThemeProvider, StyledEngineProvider } from '@mui/material';
 import GlobalStyles from './components/GlobalStyles';
 import theme from './theme';
 import Approuter from './Approuter';
+import { RecoilRoot } from 'recoil';
 
 // @ts-ignore
 const keycloak = new Keycloak({
@@ -15,12 +16,14 @@ const keycloak = new Keycloak({
 
 const App = () => (
   <ReactKeycloakProvider authClient={keycloak}>
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <GlobalStyles />
-        <Approuter />
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <RecoilRoot>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <GlobalStyles />
+          <Approuter />
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </RecoilRoot>
   </ReactKeycloakProvider>
 );
 

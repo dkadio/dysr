@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -9,45 +9,90 @@ import {
   Grid,
   TextField
 } from '@mui/material';
+import { codeoptions, codevalue, sizeselector } from '../../utils/codestate';
+import { useRecoilState } from 'recoil';
+import Slider from '@mui/material/Slider';
+import ColorPicker from './ColorPicker';
 
-const states = [
-  {
-    value: 'alabama',
-    label: 'Alabama'
-  },
-  {
-    value: 'new-york',
-    label: 'New York'
-  },
-  {
-    value: 'san-francisco',
-    label: 'San Francisco'
-  }
-];
-
-const CodeGeneratorSettings = (props) => {
-  const [values, setValues] = useState({
-    firstName: 'Katarina',
-    lastName: 'Smith',
-    email: 'demo@devias.io',
-    phone: '',
-    state: 'Alabama',
-    country: 'USA'
-  });
+const CodeGeneratorSettings = ({ savecode, ...props }) => {
+  const [options, setOptions] = useRecoilState(codeoptions);
+  const [value, setValue] = useRecoilState(codevalue);
+  const [size, setSize] = useRecoilState(sizeselector);
 
   const handleChange = (event) => {
-    setValues({
-      ...values,
+    console.log('event', event);
+    setOptions({
+      ...options,
       [event.target.name]: event.target.value
     });
   };
+
+  const handleValueChange = (event) => {
+    console.log('New Address Value', event);
+    setValue(event.target.value);
+  };
+
+  const handleSize = (event) => {
+    setSize(Number(event.target.value));
+  };
+
+  const handleDark = (event) => {
+    console.log(event);
+    setOptions({ ...options, colorDark: event.hex });
+  };
+  const handleLight = (event) => {
+    setOptions({ ...options, colorLight: event.hex });
+  };
+
+  useEffect(() => {});
 
   return (
     <form autoComplete="off" noValidate {...props}>
       <Card>
         <CardHeader subheader="The information can be edited" title="Profile" />
         <Divider />
-        <CardContent>Here we place the QR COde Generator</CardContent>
+        <CardContent>
+          <Grid container spacing={3}>
+            <Grid item lg={12} md={12} xs={12}>
+              <TextField
+                fullWidth
+                placeholder="http://dysr.com"
+                value={value}
+                variant="standard"
+                type="url"
+                name="value"
+                onChange={handleValueChange}
+              />
+            </Grid>
+            <Grid item lg={8} md={12} xs={12}>
+              <Slider
+                size="small"
+                defaultValue={256}
+                aria-label="Small"
+                valueLabelDisplay="auto"
+                name="width"
+                onChange={handleSize}
+                min={32}
+                max={448}
+                step={32}
+              />
+            </Grid>
+            <Grid item lg={2} md={2} xs={6}>
+              <ColorPicker
+                name="Dark"
+                handleChange={handleDark}
+                color={options.colorDark}
+              />
+            </Grid>
+            <Grid item lg={2} md={2} xs={6}>
+              <ColorPicker
+                name="Light"
+                handleChange={handleLight}
+                color={options.colorLight}
+              />
+            </Grid>
+          </Grid>
+        </CardContent>
         <Divider />
         <Box
           sx={{
@@ -56,8 +101,8 @@ const CodeGeneratorSettings = (props) => {
             p: 2
           }}
         >
-          <Button color="primary" variant="contained">
-            Save details
+          <Button onClick={savecode} color="primary" variant="contained">
+            Save
           </Button>
         </Box>
       </Card>

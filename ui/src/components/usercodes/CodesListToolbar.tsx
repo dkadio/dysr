@@ -8,6 +8,7 @@ import {
   SvgIcon
 } from '@mui/material';
 import { Search as SearchIcon } from 'react-feather';
+import { Link } from 'react-router-dom';
 
 const CodesListToolbar = (props) => (
   <Box {...props}>
@@ -19,8 +20,13 @@ const CodesListToolbar = (props) => (
     >
       <Button>Import</Button>
       <Button sx={{ mx: 1 }}>Export</Button>
-      <Button color="primary" variant="contained">
-        Add customer
+      <Button
+        component={Link}
+        to="/app/generator"
+        color="primary"
+        variant="contained"
+      >
+        Create Code
       </Button>
     </Box>
     <Box sx={{ mt: 3 }}>
@@ -38,7 +44,7 @@ const CodesListToolbar = (props) => (
                   </InputAdornment>
                 )
               }}
-              placeholder="Search customer"
+              placeholder="Search..."
               variant="outlined"
             />
           </Box>

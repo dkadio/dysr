@@ -18,6 +18,10 @@ const routes = (isLoggedIn) => [
         path: 'generator',
         element: isLoggedIn ? <CodeGeneratorPage /> : <Navigate to="/login" />
       },
+      {
+        path: 'generator/:id',
+        element: isLoggedIn ? <CodeGeneratorPage /> : <Navigate to="/login" />
+      },
       { path: 'codes/:id', element: <CodesList /> },
       { path: 'codes', element: <CodesList /> },
       { path: 'dashboard', element: <Dashboard /> },

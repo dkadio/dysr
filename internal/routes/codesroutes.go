@@ -52,7 +52,7 @@ func NewCodesRouter() (*fizz.Fizz, error) {
 	}, tonic.Handler(cc.GetCode, http.StatusOK))
 
 	group.POST("/codes", []fizz.OperationOption{
-		fizz.Summary("Update a pet."),
+		fizz.Summary("Creates a UserCode."),
 		fizz.Response(fmt.Sprint(http.StatusInternalServerError), "Server Error", models.APIError{}, nil, nil),
 	}, tonic.Handler(cc.CreateCode, http.StatusOK))
 

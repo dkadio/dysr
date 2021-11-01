@@ -2,11 +2,13 @@ import { Helmet } from 'react-helmet';
 import { useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import CustomerListResults from '../components/usercodes/CodesListResults';
-import CustomerListToolbar from '../components/usercodes/CodesListToolbar';
+import CodesListToolbar from '../components/usercodes/CodesListToolbar';
 import { CodesApiService } from '../gen/api/services/CodesApiService';
+import { codeslist } from '../utils/codestate';
+import { useRecoilState } from 'recoil';
 
 const CodesList = () => {
-  const [codes, setCodes] = useState([]);
+  const [codes, setCodes] = useRecoilState(codeslist);
 
   useEffect(() => {
     CodesApiService.getCodesFm()
@@ -24,7 +26,7 @@ const CodesList = () => {
   return (
     <>
       <Helmet>
-        <title>Customers | Material Kit</title>
+        <title>Dynamic QR Codes | Statistics Free OpenSource</title>
       </Helmet>
       <Box
         sx={{
@@ -34,7 +36,7 @@ const CodesList = () => {
         }}
       >
         <Container maxWidth={false}>
-          <CustomerListToolbar />
+          <CodesListToolbar />
           <Box sx={{ pt: 3 }}>
             <CustomerListResults codes={codes} />
           </Box>

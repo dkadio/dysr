@@ -1,8 +1,7 @@
 /* eslint-disable */
 
-import { useState } from 'react';
+import { useState, useEffect, createRef } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
   Avatar,
@@ -17,13 +16,20 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import getInitials from '../../utils/getInitials';
+import CodesRow from './CodesRow';
+import { useNavigate } from 'react-router-dom';
+import { CodesApiService } from '../../gen/api/services/CodesApiService';
+import { useRecoilState } from 'recoil';
+import { codeslist } from '../../utils/codestate';
+import { SettingsRemoteRounded } from '@material-ui/icons';
 
 const CodesListResults = ({ codes, ...rest }) => {
   console.log(codes);
   const [selectedcodeIds, setSelectedcodeIds] = useState([]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
+  const nav = useNavigate();
+  const [codesList, setCodes] = useRecoilState(codeslist);
 
   const handleSelectAll = (event) => {
     let newSelectedcodeIds;
@@ -33,8 +39,24 @@ const CodesListResults = ({ codes, ...rest }) => {
     } else {
       newSelectedcodeIds = [];
     }
-
     setSelectedcodeIds(newSelectedcodeIds);
+  };
+
+  const handleDashboardView = (item) => {
+    nav('/app/dashboard/' + item.id);
+  };
+  const handleEditView = (item) => {
+    nav('/app/generator/' + item.id);
+  };
+  const handleDelete = (item) => {
+    CodesApiService.deleteCodeFm(item.id)
+      .then((response) => {
+        const newCodes = codesList.filter((code) => code.id !== item.id);
+        setCodes(newCodes);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleSelectOne = (event, id) => {
@@ -86,50 +108,23 @@ const CodesListResults = ({ codes, ...rest }) => {
                   />
                 </TableCell>
                 <TableCell>url</TableCell>
-                <TableCell>clicked</TableCell>
-                <TableCell>link</TableCell>
+                <TableCell>address</TableCell>
                 <TableCell>created</TableCell>
                 <TableCell>updated</TableCell>
+                <TableCell>actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {codes.slice(0, limit).map((code) => (
-                <TableRow
-                  hover
+                <CodesRow
                   key={code.id}
-                  selected={selectedcodeIds.indexOf(code.id) !== -1}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedcodeIds.indexOf(code.id) !== -1}
-                      onChange={(event) => handleSelectOne(event, code.id)}
-                      value="true"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        alignItems: 'center',
-                        display: 'flex'
-                      }}
-                    >
-                      <Avatar src={code.avatarUrl} sx={{ mr: 2 }}>
-                        {getInitials(code.name)}
-                      </Avatar>
-                      <Typography color="textPrimary" variant="body1">
-                        http://localhost:8080/{code.code.key}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>{code.user}</TableCell>
-                  <TableCell>{code.code.value}</TableCell>
-                  <TableCell>
-                    {moment.unix(code.created).format('DD/MM/YYYY - hh:mm')}
-                  </TableCell>
-                  <TableCell>
-                    {moment.unix(code.updated).format('DD/MM/YYYY - hh:mm')}
-                  </TableCell>
-                </TableRow>
+                  code={code}
+                  handleDelete={handleDelete}
+                  handleDashboardView={handleDashboardView}
+                  handleEditView={handleEditView}
+                  selectedcodeIds={selectedcodeIds}
+                  handleSelectOne={handleSelectOne}
+                />
               ))}
             </TableBody>
           </Table>

@@ -3,15 +3,31 @@ package models
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"github.com/dkadio/dysr/util"
 	"github.com/google/uuid"
 	"strings"
 	"time"
 )
 
 type Code struct {
-	UUID  string `json:"-" path:"id" bson:"-"`
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	UUID    string  `json:"-" path:"id" bson:"-"`
+	Key     string  `json:"key"`
+	Value   string  `json:"value"`
+	Options Options `json:"options"`
+}
+
+type Options struct {
+	Text       string `json:"text"`       //'https://github.com/ushelp/EasyQRCodeJS',
+	Width      int    `json:"width"`      //256,
+	Height     int    `json:"height"`     //256,
+	ColorDark  string `json:"colorDark"`  //'#000000',
+	ColorLight string `json:"colorLight"` //'#ffffff',
+}
+
+type CreateCode struct {
+	Key     string  `json:"key"`
+	Value   string  `json:"value"`
+	Options Options `json:"options"`
 }
 
 type UserCode struct {
@@ -22,7 +38,8 @@ type UserCode struct {
 	Code    Code   `json:"code" bson:",inline"`
 }
 
-func NewUserCode(user, value string) UserCode {
+func NewUserCode(user, value string, options Options) UserCode {
+	config := util.LoadConfig()
 	userCode := UserCode{}
 	userCode.UUID = uuid.New().String()
 	userCode.User = user
@@ -30,6 +47,8 @@ func NewUserCode(user, value string) UserCode {
 	userCode.Updated = time.Now().Unix()
 	userCode.Code.Value = value
 	userCode.Code.Key = strings.ToUpper(createRandomKey(user))
+	userCode.Code.Options = options
+	userCode.Code.Options.Text = config.ServiceURL + "/" + userCode.Code.Key
 	return userCode
 }
 
