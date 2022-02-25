@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/MicahParks/keyfunc"
+	"github.com/dkadio/dysr/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 
@@ -17,8 +18,10 @@ type Middlewares struct {
 }
 
 func NewMiddlewares(jwksUrl string) Middlewares {
+
+	config := util.LoadConfig()
 	if jwksUrl == "" {
-		return Middlewares{"http://localhost:8080/auth/realms/dysr/protocol/openid-connect/certs"}
+		return Middlewares{config.JWKSUrl}
 	}
 	return Middlewares{jwksUrl}
 }

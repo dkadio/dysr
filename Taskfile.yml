@@ -8,7 +8,7 @@ tasks:
       - echo "stopped"
 
   run:go:
-    deps: [run:redirector, run:api]
+    deps: [run:stats, run:redirector, run:api]
     desc: run backend
     cmds:
       - echo "stopped"
@@ -23,6 +23,11 @@ tasks:
     desc: start docker-compose
     cmds:
       - docker-compose up
+
+  run:stats:
+    desc: Runs Go backend
+    cmds:
+      - go run cmd/stats/main.go
 
   run:api:
     desc: Runs Go backend

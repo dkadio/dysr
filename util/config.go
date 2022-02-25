@@ -16,6 +16,8 @@ type Config struct {
 	MongoUri        string `mapstructure:"MONGO_URI"`
 	DatabaseName    string `mapstructure:"DATABASE_NAME"`
 	NatsServer      string `mapstructure:"NATS_SERVER"`
+	FrontEndUrl     string `mapstructure:"FRONTEND_URL"`
+	JWKSUrl         string `mapstructure:"JWKS_URL"`
 }
 
 func LoadConfig() (config Config) {

@@ -1,18 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/dkadio/dysr/internal/controllers"
+	"github.com/dkadio/dysr/internal/models"
 	"github.com/gorilla/mux"
 )
 
 func main() {
-
-	//TODO: This loads first all key values from mongo to bolt
-	//TODO: Then redirect every received key to given value
-	//TODO: reacts on CUD Code Options and updates bolt
+	log.SetFlags(log.Lshortfile)
 	rh := controllers.NewRedirectController()
 	rh.Init()
 
@@ -25,11 +23,13 @@ func main() {
 }
 
 func redirect(w http.ResponseWriter, r *http.Request) {
+	log.Printf("%+v", r)
 	rh := controllers.NewRedirectController()
-	rd := rh.GetValueFor(r.URL.Path[1:])
-	fmt.Println("Redirecting to: ", rd)
-
+	code := r.URL.Path[1:]
+	rd, err := rh.GetValueFor(code)
+	if err == nil {
+		req := models.NewRequestFrom(r, code)
+		rh.InformRedirect(req)
+	}
 	http.Redirect(w, r, rd, http.StatusTemporaryRedirect)
-
-	//now its time for statistics
 }

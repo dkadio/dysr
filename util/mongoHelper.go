@@ -20,6 +20,7 @@ var clientInstanceError error
 var mongoOnce sync.Once
 
 const CODES_COLLECTION_NAME = "codes"
+const STATS_COLLECTION_NAME = "stats"
 
 //GetMongoClient - Return mongodb connection to work with
 func GetMongoClient() (*mongo.Client, error) {

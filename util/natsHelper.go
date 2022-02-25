@@ -13,6 +13,8 @@ const CODES_CREATED_EVENT = "codescreated"
 const CODES_UPDATED_EVENT = "codesupdated"
 const CODES_DELETE_EVENT = "codesdeleted"
 
+const REDIRECTED_EVENT = "redirected"
+
 func GetNatsClient() (*nats.EncodedConn, error) {
 	//Perform connection creation operation only once.
 	config := LoadConfig()
